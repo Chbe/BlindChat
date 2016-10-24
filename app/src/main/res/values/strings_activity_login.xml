@@ -1,10 +1,10 @@
 <resources>
-    <string name="title_activity_login">Join</string>
+    <string name="title_activity_login">Let's chat</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_username">What\'s your nickname?</string>
-    <string name="action_sign_in">Join</string>
-    <string name="action_sign_in_short">Join</string>
+    <string name="prompt_username">What\'s your username?</string>
+    <string name="action_sign_in">Let's chat</string>
+    <string name="action_sign_in_short">Let's chat</string>
 
-    <string name="error_field_required">This field is required</string>
+    <string name="error_field_required">Type in a username</string>
 </resources>

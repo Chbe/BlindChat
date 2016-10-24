@@ -30,8 +30,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.nkzawa.socketio.androidchat.utils.Utils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -128,6 +126,10 @@ public class MainFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
+        getActivity().unregisterReceiver(this.broadcastReceiver);
+        Intent intent = new Intent(getActivity(), BackgroundLocationService.class);
+        getActivity().stopService(intent);
+
         mSocket.disconnect();
 
         mSocket.off(Socket.EVENT_CONNECT, onConnect);
@@ -139,35 +141,12 @@ public class MainFragment extends Fragment {
         mSocket.off("user left", onUserLeft);
         mSocket.off("typing", onTyping);
         mSocket.off("stop typing", onStopTyping);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //mLocation.setText("onResume");
-        if(!Utils.isMyServiceRunning(getActivity(), BackgroundLocationService.class)) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-                printLocation();
-            }
-
-            else {
-                Intent intent = new Intent(getActivity(), BackgroundLocationService.class);
-                getActivity().startService(intent);
-
-                printLocation();
-            }
-        }
-
     }
 
     @Override

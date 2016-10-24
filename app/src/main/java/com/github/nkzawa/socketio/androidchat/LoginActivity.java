@@ -1,12 +1,8 @@
 package com.github.nkzawa.socketio.androidchat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -72,23 +68,23 @@ public class LoginActivity extends Activity {
 
         /*mLocation = (TextView) findViewById(R.id.textView);*/
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        /*if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
-            // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-        } else {
-            /*Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
+                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            } else {
+            Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
             startService(intent);
 
-            printLocation();*/
-        }
+            printLocation();
+        }*/
     }
 
     @Override
@@ -188,7 +184,7 @@ public class LoginActivity extends Activity {
 
     //------------------------------------------->GPS codes<---------------------------------------------------------------------------------------------
 
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -206,7 +202,7 @@ public class LoginActivity extends Activity {
                 return;
             }
         }
-    }
+    }*/
 
     /*public void printLocation() {
         if(broadcastReceiver == null){
