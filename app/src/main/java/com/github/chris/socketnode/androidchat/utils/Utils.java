@@ -1,4 +1,4 @@
-package com.github.nkzawa.socketio.androidchat.utils;
+package com.github.chris.socketnode.androidchat.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;

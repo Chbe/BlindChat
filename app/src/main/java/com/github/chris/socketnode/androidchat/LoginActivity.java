@@ -1,4 +1,4 @@
-package com.github.nkzawa.socketio.androidchat;
+package com.github.chris.socketnode.androidchat;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -50,8 +50,9 @@ public class LoginActivity extends Activity {
 
         seekbarRadius = (SeekBar) findViewById(R.id.seekbarID);
         lblRadius = (TextView) findViewById(R.id.lblRadius);
-        seekbarRadius.setMax(1000);
+        seekbarRadius.setMax(10000);
         seekbarRadius.setProgress(radius);
+        seekbarRadius.requestFocus();
 
         lblRadius.setText("" + radius);
         seekbarRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -157,8 +158,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        /*Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-        stopService(intent);*/
+        Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
+        stopService(intent);
 
         mSocket.off("login", onLogin);
     }
@@ -209,41 +210,6 @@ public class LoginActivity extends Activity {
             finish();
         }
     };
-
-    //------------------------------------------->GPS codes<---------------------------------------------------------------------------------------------
-
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-                    startService(intent);
-
-                } else {
-
-                    // permission denied, boo! Disable the functionality that depends on this permission.
-                }
-                return;
-            }
-        }
-    }*/
-
-    /*public void printLocation() {
-        if(broadcastReceiver == null){
-            broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    mLocation.setText("\n" +intent.getExtras().get("coordinates"));
-
-                }
-            };
-        }
-        registerReceiver(broadcastReceiver,new IntentFilter("location_update"));
-    }*/
 }
 
 

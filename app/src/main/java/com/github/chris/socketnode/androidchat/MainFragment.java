@@ -1,4 +1,4 @@
-package com.github.nkzawa.socketio.androidchat;
+package com.github.chris.socketnode.androidchat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -86,8 +87,8 @@ public class MainFragment extends Fragment {
 
         ChatApplication app = (ChatApplication) getActivity().getApplication();
         mSocket = app.getSocket();
-        mSocket.on(Socket.EVENT_CONNECT,onConnect);
-        mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
+        mSocket.on(Socket.EVENT_CONNECT, onConnect);
+        mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
         mSocket.on("new message", onNewMessage);
@@ -129,7 +130,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         getActivity().unregisterReceiver(this.broadcastReceiver);
         Intent intent = new Intent(getActivity(), BackgroundLocationService.class);
         getActivity().stopService(intent);
@@ -255,19 +255,30 @@ public class MainFragment extends Fragment {
         addLog(getResources().getQuantityString(R.plurals.message_participants, numUsers, numUsers));
     }
 
-    private void addMessage(String username, String message) {
-       /* Log.i(TAG, "Longitude: " + loc.getLongitude() + "Latitude: " + loc.getLatitude() );
+    private void addMessage(String username, String message, String longitude1, String latitude1) {
+        Location locationA = new Location("point A");
 
-        if (myLocation != null) {
-            float distanceInMeters = myLocation.distanceTo(loc);
+        locationA.setLatitude(Double.parseDouble(latitude1));
+        locationA.setLongitude(Double.parseDouble(longitude1));
 
-            if (distanceInMeters <= LoginActivity.radius) {*/
-                mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
-                        .username(username).message(message).build());
-                mAdapter.notifyItemInserted(mMessages.size() - 1);
-                scrollToBottom();
-            /*}
-        }*/
+        Location locationB = new Location("point B");
+
+        locationB.setLatitude(latitude);
+        locationB.setLongitude(longitude);
+
+        float distance = locationA.distanceTo(locationB);
+        String completeRadius = LoginActivity.radius + "." + String.valueOf(00);
+
+        Log.i(TAG, "" + distance);
+        Log.i(TAG, "" + completeRadius);
+
+        if (distance <= Double.parseDouble(completeRadius)) {
+
+            mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
+                    .username(username).message(message).build());
+            mAdapter.notifyItemInserted(mMessages.size() - 1);
+            scrollToBottom();
+        }
     }
 
     private void addTyping(String username) {
@@ -301,7 +312,7 @@ public class MainFragment extends Fragment {
 
 
         mInputMessageView.setText("");
-        addMessage(username, message);
+        addMessage(username, message, String.valueOf(longitude), String.valueOf(latitude));
 
         try {
             JSONObject jsonObject = new JSONObject();
@@ -310,8 +321,7 @@ public class MainFragment extends Fragment {
             jsonObject.put("longitude", longitude);
             jsonObject.put("latitude", latitude);
             mSocket.emit("new message", jsonObject);
-        }
-        catch (JSONException e){
+        } catch (JSONException e) {
             Log.i(TAG, e.toString());
         }
 
@@ -343,8 +353,8 @@ public class MainFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(!isConnected) {
-                        if(null!= username)
+                    if (!isConnected) {
+                        if (null != username)
                             mSocket.emit("add user", username);
                         Toast.makeText(getActivity().getApplicationContext(),
                                 R.string.connect, Toast.LENGTH_LONG).show();
@@ -398,13 +408,13 @@ public class MainFragment extends Fragment {
                         message = data.getString("message");
                         latitude = data.getString("latitude");
                         longitude = data.getString("longitude");
-                        Log.i(TAG,"" + latitude + longitude );
+                        Log.i(TAG, "" + latitude + longitude);
                     } catch (JSONException e) {
                         return;
                     }
 
                     removeTyping(username);
-                    addMessage(username, message);
+                    addMessage(username, message, longitude, latitude);
                 }
             });
         }
@@ -506,18 +516,18 @@ public class MainFragment extends Fragment {
     };
 
     public void printLocation() {
-        if(broadcastReceiver == null){
+        if (broadcastReceiver == null) {
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    textView.setText("\n" +intent.getExtras().get("coordinates"));
+                    textView.setText("\n" + intent.getExtras().get("coordinates"));
                     latitude = (double) intent.getExtras().get("latitude");
                     longitude = (double) intent.getExtras().get("longitude");
 
                 }
             };
         }
-        getActivity().registerReceiver(broadcastReceiver,new IntentFilter("location_update"));
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter("location_update"));
     }
 
     @Override

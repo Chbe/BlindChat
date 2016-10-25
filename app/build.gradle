@@ -16,7 +16,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "21.1.2"
     defaultConfig {
-        applicationId 'com.github.nkzawa.socketio.androidchat'
+        applicationId 'com.github.chris.socketnode.androidchat'
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

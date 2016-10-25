@@ -1,4 +1,4 @@
-package com.github.nkzawa.socketio.androidchat;
+package com.github.chris.socketnode.androidchat;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

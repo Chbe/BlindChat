@@ -1,4 +1,4 @@
-package com.github.nkzawa.socketio.androidchat;
+package com.github.chris.socketnode.androidchat;
 
 import android.app.IntentService;
 import android.app.NotificationManager;

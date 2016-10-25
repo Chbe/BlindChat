@@ -7,7 +7,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.github.nkzawa.socketio.androidchat.LoginActivity">
+        tools:context="com.github.chris.socketnode.androidchat.LoginActivity">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -16,25 +16,21 @@
             android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView" />
-
-        <TextView
             android:id="@+id/lblRadius"
             android:padding="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:textSize="20dp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/white" />
 
         <SeekBar
             android:layout_width="189dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/seekbarID"
-            android:max="1000" />
+            android:focusable="true"
+            android:max="10000" />
 
         <EditText
                 android:id="@+id/username_input"
@@ -47,7 +43,7 @@
                 android:inputType="textPersonName"
                 android:maxLength="14"
                 android:maxLines="1"
-                android:singleLine="true"/>
+                android:singleLine="true" />
         <Button
                 android:id="@+id/sign_in_button"
                 style="?android:textAppearanceSmall"
