@@ -20,6 +20,22 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView" />
 
+        <TextView
+            android:id="@+id/lblRadius"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textSize="20dp"
+            android:textColor="@android:color/black" />
+
+        <SeekBar
+            android:layout_width="189dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/seekbarID"
+            android:max="1000" />
+
         <EditText
                 android:id="@+id/username_input"
                 android:layout_width="match_parent"

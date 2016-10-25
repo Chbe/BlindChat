@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,6 +45,7 @@ import io.socket.emitter.Emitter;
  * A chat fragment containing messages view and input form.
  */
 public class MainFragment extends Fragment {
+    protected static final String TAG = "MainFragment";
 
     private static final int REQUEST_LOGIN = 0;
 
@@ -55,12 +57,14 @@ public class MainFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private boolean mTyping = false;
     private Handler mTypingHandler = new Handler();
-    private String mUsername;
+    private String username;
     private Socket mSocket;
 
     private BroadcastReceiver broadcastReceiver;
     private TextView textView;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private double longitude = 0;
+    private double latitude = 0;
 
     private Boolean isConnected = true;
 
@@ -177,7 +181,7 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (null == mUsername) return;
+                if (null == username) return;
                 if (!mSocket.connected()) return;
 
                 if (!mTyping) {
@@ -211,7 +215,7 @@ public class MainFragment extends Fragment {
             return;
         }
 
-        mUsername = data.getStringExtra("username");
+        username = data.getStringExtra("username");
         int numUsers = data.getIntExtra("numUsers", 1);
 
         addLog(getResources().getString(R.string.message_welcome));
@@ -252,10 +256,18 @@ public class MainFragment extends Fragment {
     }
 
     private void addMessage(String username, String message) {
-        mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
-                .username(username).message(message).build());
-        mAdapter.notifyItemInserted(mMessages.size() - 1);
-        scrollToBottom();
+       /* Log.i(TAG, "Longitude: " + loc.getLongitude() + "Latitude: " + loc.getLatitude() );
+
+        if (myLocation != null) {
+            float distanceInMeters = myLocation.distanceTo(loc);
+
+            if (distanceInMeters <= LoginActivity.radius) {*/
+                mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
+                        .username(username).message(message).build());
+                mAdapter.notifyItemInserted(mMessages.size() - 1);
+                scrollToBottom();
+            /*}
+        }*/
     }
 
     private void addTyping(String username) {
@@ -276,7 +288,7 @@ public class MainFragment extends Fragment {
     }
 
     private void attemptSend() {
-        if (null == mUsername) return;
+        if (null == username) return;
         if (!mSocket.connected()) return;
 
         mTyping = false;
@@ -287,21 +299,35 @@ public class MainFragment extends Fragment {
             return;
         }
 
+
         mInputMessageView.setText("");
-        addMessage(mUsername, message);
+        addMessage(username, message);
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", username);
+            jsonObject.put("message", message);
+            jsonObject.put("longitude", longitude);
+            jsonObject.put("latitude", latitude);
+            mSocket.emit("new message", jsonObject);
+        }
+        catch (JSONException e){
+            Log.i(TAG, e.toString());
+        }
+
 
         // perform the sending message attempt.
-        mSocket.emit("new message", message);
+        //mSocket.emit("new message", username, message, String.valueOf(longitude), String.valueOf(latitude));
     }
 
     private void startSignIn() {
-        mUsername = null;
+        username = null;
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivityForResult(intent, REQUEST_LOGIN);
     }
 
     private void leave() {
-        mUsername = null;
+        username = null;
         mSocket.disconnect();
         mSocket.connect();
         startSignIn();
@@ -318,8 +344,8 @@ public class MainFragment extends Fragment {
                 @Override
                 public void run() {
                     if(!isConnected) {
-                        if(null!=mUsername)
-                            mSocket.emit("add user", mUsername);
+                        if(null!= username)
+                            mSocket.emit("add user", username);
                         Toast.makeText(getActivity().getApplicationContext(),
                                 R.string.connect, Toast.LENGTH_LONG).show();
                         isConnected = true;
@@ -365,9 +391,14 @@ public class MainFragment extends Fragment {
                     JSONObject data = (JSONObject) args[0];
                     String username;
                     String message;
+                    String latitude;
+                    String longitude;
                     try {
                         username = data.getString("username");
                         message = data.getString("message");
+                        latitude = data.getString("latitude");
+                        longitude = data.getString("longitude");
+                        Log.i(TAG,"" + latitude + longitude );
                     } catch (JSONException e) {
                         return;
                     }
@@ -480,6 +511,8 @@ public class MainFragment extends Fragment {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     textView.setText("\n" +intent.getExtras().get("coordinates"));
+                    latitude = (double) intent.getExtras().get("latitude");
+                    longitude = (double) intent.getExtras().get("longitude");
 
                 }
             };

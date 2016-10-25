@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -30,6 +31,10 @@ public class LoginActivity extends Activity {
 
     private Socket mSocket;
 
+    private SeekBar seekbarRadius;
+    private TextView lblRadius;
+    public static int radius;
+
     /*private static TextView mLocation;
 
     private BroadcastReceiver broadcastReceiver;*/
@@ -43,6 +48,29 @@ public class LoginActivity extends Activity {
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
 
+        seekbarRadius = (SeekBar) findViewById(R.id.seekbarID);
+        lblRadius = (TextView) findViewById(R.id.lblRadius);
+        seekbarRadius.setMax(1000);
+        seekbarRadius.setProgress(radius);
+
+        lblRadius.setText("" + radius);
+        seekbarRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekbarRadius, int i, boolean b) {
+                radius = i;
+                lblRadius.setText("" + radius);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username_input);
         mUsernameView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
