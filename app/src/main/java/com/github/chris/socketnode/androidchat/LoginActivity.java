@@ -158,8 +158,6 @@ public class LoginActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-        stopService(intent);
 
         mSocket.off("login", onLogin);
     }

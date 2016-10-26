@@ -151,6 +151,10 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Intent intent = new Intent(getActivity(), BackgroundLocationService.class);
+        getActivity().startService(intent);
+        printLocation();
+        Log.i(TAG, "Service startad från login");
     }
 
     @Override
@@ -269,8 +273,8 @@ public class MainFragment extends Fragment {
         float distance = locationA.distanceTo(locationB);
         String completeRadius = LoginActivity.radius + "." + String.valueOf(00);
 
-        Log.i(TAG, "" + distance);
-        Log.i(TAG, "" + completeRadius);
+        Log.i(TAG, "" + distance + "m ifrån");
+        Log.i(TAG, "" + completeRadius + "m radie bestämt");
 
         if (distance <= Double.parseDouble(completeRadius)) {
 
