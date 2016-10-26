@@ -23,14 +23,19 @@
             android:layout_marginTop="30dp"
             android:textSize="20dp"
             android:textColor="@android:color/black" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:text="Set a radius on how far you want to receive messages from" />
 
         <SeekBar
-            android:layout_width="189dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/seekbarID"
             android:focusable="true"
-            android:max="10000" />
+            android:max="5000" />
 
         <EditText
                 android:id="@+id/username_input"

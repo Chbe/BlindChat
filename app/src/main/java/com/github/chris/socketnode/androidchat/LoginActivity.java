@@ -33,7 +33,7 @@ public class LoginActivity extends Activity {
 
     private SeekBar seekbarRadius;
     private TextView lblRadius;
-    public static int radius;
+    public static int radius = 500;
 
     /*private static TextView mLocation;
 
@@ -50,16 +50,16 @@ public class LoginActivity extends Activity {
 
         seekbarRadius = (SeekBar) findViewById(R.id.seekbarID);
         lblRadius = (TextView) findViewById(R.id.lblRadius);
-        seekbarRadius.setMax(10000);
-        seekbarRadius.setProgress(radius);
+        seekbarRadius.setMax(5000);
+        seekbarRadius.setProgress(500);
         seekbarRadius.requestFocus();
 
-        lblRadius.setText("" + radius);
+        lblRadius.setText("" + radius + "m radius");
         seekbarRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekbarRadius, int i, boolean b) {
                 radius = i;
-                lblRadius.setText("" + radius);
+                lblRadius.setText("" + radius + "m radius");
             }
 
             @Override
