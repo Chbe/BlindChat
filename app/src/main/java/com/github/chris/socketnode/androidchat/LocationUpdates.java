@@ -36,7 +36,7 @@ public class LocationUpdates extends IntentService {
             Log.i(TAG, "onHandleIntent " + location.getLatitude() + "," + location.getLongitude());
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             NotificationCompat.Builder noti = new NotificationCompat.Builder(this);
-            noti.setContentTitle("Fused Location");
+            noti.setContentTitle("Flocker is using gps");
             noti.setContentText(location.getLatitude() + "," + location.getLongitude());
             noti.setSmallIcon(R.drawable.ic_launcher);
 

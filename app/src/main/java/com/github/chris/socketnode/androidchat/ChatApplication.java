@@ -1,12 +1,13 @@
 package com.github.chris.socketnode.androidchat;
 
-import android.app.Application;
-import io.socket.client.IO;
-import io.socket.client.Socket;
+import android.support.multidex.MultiDexApplication;
 
 import java.net.URISyntaxException;
 
-public class ChatApplication extends Application {
+import io.socket.client.IO;
+import io.socket.client.Socket;
+
+public class ChatApplication extends MultiDexApplication {
 
     private Socket mSocket;
     {
