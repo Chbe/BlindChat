@@ -2,6 +2,8 @@ package com.github.chris.socketnode.androidchat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -245,6 +248,8 @@ public class MainFragment extends Fragment {
             return true;
         }
 
+
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -257,6 +262,29 @@ public class MainFragment extends Fragment {
 
     private void addParticipantsLog(int numUsers) {
         addLog(getResources().getQuantityString(R.plurals.message_participants, numUsers, numUsers));
+    }
+
+    private void smackUpNotification(String ausername, String message) {
+        if (ausername != username) {
+
+            NotificationCompat.Builder noti = new NotificationCompat.Builder(getActivity());
+            noti.setContentTitle(ausername + ": ");
+            noti.setContentText(message);
+            noti.setSmallIcon(R.drawable.ic_launcher);
+            noti.setAutoCancel(true);
+
+            Intent notificationIntent = new Intent(Intent.ACTION_MAIN);
+            notificationIntent.setClass(getActivity().getApplicationContext(), MainActivity.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+            PendingIntent notificationPendingIntent = PendingIntent.getActivity(getActivity(), 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            noti.setContentIntent(notificationPendingIntent);
+
+            NotificationManager mNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            mNotificationManager.notify(1, noti.build());
+        }
     }
 
     private void addMessage(String username, String message, String longitude1, String latitude1) {
@@ -282,6 +310,7 @@ public class MainFragment extends Fragment {
                     .username(username).message(message).build());
             mAdapter.notifyItemInserted(mMessages.size() - 1);
             scrollToBottom();
+            smackUpNotification(username, message);
         }
     }
 

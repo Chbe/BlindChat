@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/lblRadius"
@@ -21,13 +22,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:textSize="20dp"
-            android:textColor="@android:color/black" />
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:textAlignment="center" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15dp"
-            android:text="Set a radius on how far you want to receive messages from" />
+            android:textSize="15sp"
+            android:text="Set a radius on how far you want to receive messages from"
+            android:textAlignment="center" />
 
         <SeekBar
             android:layout_width="match_parent"
@@ -53,10 +56,12 @@
                 android:id="@+id/sign_in_button"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="100sp"
                 android:layout_marginTop="16dp"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold"/>
+            android:layout_weight="2.26"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif" />
 
     </LinearLayout>
 </ScrollView>

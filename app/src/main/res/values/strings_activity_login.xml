@@ -2,7 +2,7 @@
     <string name="title_activity_login">Flocker</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_username">What\'s your nickname?</string>
+    <string name="prompt_username">Choose a nickname</string>
     <string name="action_sign_in">Join</string>
     <string name="action_sign_in_short">Join</string>
 
