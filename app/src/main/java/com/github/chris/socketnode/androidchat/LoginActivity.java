@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,12 +34,13 @@ public class LoginActivity extends Activity {
 
     private SeekBar seekbarRadius;
     private TextView lblRadius;
-    public static int radius = 500;
+    //public static int radius = 500;
 
     /*private static TextView mLocation;
 
     private BroadcastReceiver broadcastReceiver;*/
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +56,12 @@ public class LoginActivity extends Activity {
         seekbarRadius.setProgress(500);
         seekbarRadius.requestFocus();
 
-        lblRadius.setText("" + radius + "m radius");
+        lblRadius.setText("" + Constants.radius + "m radius");
         seekbarRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekbarRadius, int i, boolean b) {
-                radius = i;
-                lblRadius.setText("" + radius + "m radius");
+                Constants.radius = i;
+                lblRadius.setText("" + Constants.radius + "m radius");
             }
 
             @Override
@@ -90,69 +92,21 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View view) {
                 attemptLogin();
+                Log.i(TAG, "Radie:" + Constants.radius + " Username: " + mUsername);
             }
         });
 
         mSocket.on("login", onLogin);
-
-        /*mLocation = (TextView) findViewById(R.id.textView);*/
-
-        /*if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            } else {
-            Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-            startService(intent);
-
-            printLocation();
-        }*/
     }
 
     @Override
     protected void onResume() {
-        super.onResume();/*
-        //mLocation.setText("onResume");
-        if(!Utils.isMyServiceRunning(this, BackgroundLocationService.class)) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-                *//*printLocation();*//*
-            }
-
-            else {
-                *//*Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-                startService(intent);
-
-                printLocation();*//*
-            }
-        }
-
-    */}
+        super.onResume();
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        /*this.unregisterReceiver(this.broadcastReceiver);
-        Log.i(TAG,"Paused Location Updates");
-        Intent intent = new Intent(LoginActivity.this, BackgroundLocationService.class);
-        stopService(intent);*/
-        //mLocation.append("onPause");
     }
 
     @Override
@@ -162,11 +116,6 @@ public class LoginActivity extends Activity {
         mSocket.off("login", onLogin);
     }
 
-    /**
-     * Attempts to sign in the account specified by the login form.
-     * If there are form errors (invalid username, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
         // Reset errors.
         mUsernameView.setError(null);

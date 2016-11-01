@@ -2,10 +2,12 @@ package com.github.chris.socketnode.androidchat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -32,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,8 @@ import java.util.List;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 
 /**
@@ -69,7 +74,6 @@ public class MainFragment extends Fragment {
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private double longitude = 0;
     private double latitude = 0;
-
     private Boolean isConnected = true;
 
     public MainFragment() {
@@ -165,7 +169,6 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         textView = (TextView) view.findViewById(R.id.textView);
-
         mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mMessagesView.setAdapter(mAdapter);
@@ -240,17 +243,69 @@ public class MainFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_leave:
+                leave();
+                return true;
+            case R.id.radius_change:
+                ShowDialog();
+                return true;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_leave) {
-            leave();
-            return true;
         }
-
-
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void ShowDialog()
+    {
+
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
+        final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        final View Viewlayout = inflater.inflate(R.layout.activity_dialog,
+                (ViewGroup) getView().findViewById(R.id.layout_dialog));
+
+        final TextView item2 = (TextView)Viewlayout.findViewById(R.id.txtItem2); // txtItem2
+
+        popDialog.setIcon(android.R.drawable.ic_menu_mylocation);
+        popDialog.setTitle("Change your radius");
+        popDialog.setView(Viewlayout);
+        //  seekBar2
+        SeekBar seek2 = (SeekBar) Viewlayout.findViewById(R.id.seekBar2);
+        seek2.setProgress(Constants.radius);
+        item2.setText("" + Constants.radius + "m radius");
+        seek2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+                //Do something here with new value
+                Constants.radius = progress;
+                item2.setText("" + progress + "m radius");
+            }
+
+            public void onStartTrackingTouch(SeekBar arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+
+        // Button OK
+        popDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Log.i(TAG, "Ny radie." + Constants.radius + "m radie bestämt");
+                    }
+
+                });
+
+
+        popDialog.create();
+        popDialog.show();
+
     }
 
     private void addLog(String message) {
@@ -265,7 +320,7 @@ public class MainFragment extends Fragment {
     }
 
     private void smackUpNotification(String ausername, String message) {
-        if (ausername != username) {
+        if (!ausername.equals(username)) {
 
             NotificationCompat.Builder noti = new NotificationCompat.Builder(getActivity());
             noti.setContentTitle(ausername + ": ");
@@ -299,7 +354,7 @@ public class MainFragment extends Fragment {
         locationB.setLongitude(longitude);
 
         float distance = locationA.distanceTo(locationB);
-        String completeRadius = LoginActivity.radius + "." + String.valueOf(00);
+        String completeRadius = Constants.radius + "." + String.valueOf(00);
 
         Log.i(TAG, "" + distance + "m ifrån");
         Log.i(TAG, "" + completeRadius + "m radie bestämt");

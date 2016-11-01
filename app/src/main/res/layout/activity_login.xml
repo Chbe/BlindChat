@@ -1,4 +1,4 @@
-<ScrollView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -14,17 +14,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true">
 
-        <TextView
-            android:id="@+id/lblRadius"
-            android:padding="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            android:textAlignment="center" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,28 +33,45 @@
             android:focusable="true"
             android:max="5000" />
 
-        <EditText
-                android:id="@+id/username_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_username"
-                android:imeActionId="@+id/login"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeOptions="actionUnspecified"
-                android:inputType="textPersonName"
-                android:maxLength="14"
-                android:maxLines="1"
-                android:singleLine="true" />
-        <Button
-                android:id="@+id/sign_in_button"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="100sp"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
-            android:layout_weight="2.26"
-            android:textSize="24sp"
-            android:fontFamily="sans-serif" />
+        <TextView
+            android:id="@+id/lblRadius"
+            android:padding="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:textAlignment="center"
+            android:layout_weight="0.12" />
 
     </LinearLayout>
-</ScrollView>
+
+    <Button
+            android:id="@+id/sign_in_button"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="100sp"
+        android:text="@string/action_sign_in"
+        android:layout_weight="2.26"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
+
+    <EditText
+            android:id="@+id/username_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/prompt_username"
+            android:imeActionId="@+id/login"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPersonName"
+            android:maxLength="14"
+            android:maxLines="1"
+            android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>
