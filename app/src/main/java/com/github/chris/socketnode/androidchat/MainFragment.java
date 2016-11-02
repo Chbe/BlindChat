@@ -42,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import io.socket.client.Socket;
@@ -75,6 +77,7 @@ public class MainFragment extends Fragment {
     private double longitude = 0;
     private double latitude = 0;
     private Boolean isConnected = true;
+    ArrayList<String> options = new ArrayList<String>();
 
     public MainFragment() {
         super();
@@ -103,6 +106,7 @@ public class MainFragment extends Fragment {
         mSocket.on("user left", onUserLeft);
         mSocket.on("typing", onTyping);
         mSocket.on("stop typing", onStopTyping);
+        mSocket.on("updateusers", onUpdateUsers);
         mSocket.connect();
 
         startSignIn();
@@ -228,6 +232,7 @@ public class MainFragment extends Fragment {
         username = data.getStringExtra("username");
         int numUsers = data.getIntExtra("numUsers", 1);
 
+
         addLog(getResources().getString(R.string.message_welcome));
         addParticipantsLog(numUsers);
     }
@@ -236,6 +241,35 @@ public class MainFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_main, menu);
+
+        /*MenuItem item;
+        menu.findItem(R.id.menu_spinner1);
+        item = menu.findItem( R.id.menu_spinner1);
+        View view1 = item.getActionView();
+        if (view1 instanceof Spinner)
+        {
+            final Spinner spinner = (Spinner) view1;
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,options);
+            spinner.setAdapter(adapter);
+
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                           int arg2, long arg3) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+
+        }*/
     }
 
     @Override
@@ -250,13 +284,39 @@ public class MainFragment extends Fragment {
             case R.id.radius_change:
                 ShowDialog();
                 return true;
+            case R.id.test:
+                ShowDialogUsers();
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void ShowDialog()
-    {
+    public void ShowDialogUsers() {
+
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
+        final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        final View Viewlayout = inflater.inflate(R.layout.users_online_dialog,
+                (ViewGroup) getView().findViewById(R.id.layout_dialog));
+
+        final TextView item2 = (TextView) Viewlayout.findViewById(R.id.txtItem2); // txtItem2
+
+        popDialog.setTitle("Users online");
+        popDialog.setView(Viewlayout);
+        item2.setText("");
+
+        for (int i = 0; i < options.size(); i++) {
+            item2.append(options.get(i));
+            item2.append("\n");
+        }
+
+        popDialog.create();
+        popDialog.show();
+
+    }
+
+    public void ShowDialog() {
 
         final AlertDialog.Builder popDialog = new AlertDialog.Builder(getActivity());
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -264,7 +324,7 @@ public class MainFragment extends Fragment {
         final View Viewlayout = inflater.inflate(R.layout.activity_dialog,
                 (ViewGroup) getView().findViewById(R.id.layout_dialog));
 
-        final TextView item2 = (TextView)Viewlayout.findViewById(R.id.txtItem2); // txtItem2
+        final TextView item2 = (TextView) Viewlayout.findViewById(R.id.txtItem2); // txtItem2
 
         popDialog.setIcon(android.R.drawable.ic_menu_mylocation);
         popDialog.setTitle("Change your radius");
@@ -274,7 +334,7 @@ public class MainFragment extends Fragment {
         seek2.setProgress(Constants.radius);
         item2.setText("" + Constants.radius + "m radius");
         seek2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser){
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //Do something here with new value
                 Constants.radius = progress;
                 item2.setText("" + progress + "m radius");
@@ -343,19 +403,8 @@ public class MainFragment extends Fragment {
     }
 
     private void addMessage(String username, String message, String longitude1, String latitude1) {
-        Location locationA = new Location("point A");
-
-        locationA.setLatitude(Double.parseDouble(latitude1));
-        locationA.setLongitude(Double.parseDouble(longitude1));
-
-        Location locationB = new Location("point B");
-
-        locationB.setLatitude(latitude);
-        locationB.setLongitude(longitude);
-
-        float distance = locationA.distanceTo(locationB);
+        double distance = calculateDistance(longitude1, latitude1);
         String completeRadius = Constants.radius + "." + String.valueOf(00);
-
         Log.i(TAG, "" + distance + "m ifrån");
         Log.i(TAG, "" + completeRadius + "m radie bestämt");
 
@@ -367,6 +416,23 @@ public class MainFragment extends Fragment {
             scrollToBottom();
             smackUpNotification(username, message);
         }
+    }
+
+    private double calculateDistance(String longitude1, String latitude1) {
+        Location locationA = new Location("point A");
+
+        locationA.setLatitude(Double.parseDouble(latitude1));
+        locationA.setLongitude(Double.parseDouble(longitude1));
+
+        Location locationB = new Location("point B");
+
+        locationB.setLatitude(latitude);
+        locationB.setLongitude(longitude);
+
+        float distance = locationA.distanceTo(locationB);
+
+        return distance;
+
     }
 
     private void addTyping(String username) {
@@ -508,6 +574,30 @@ public class MainFragment extends Fragment {
         }
     };
 
+    private Emitter.Listener onUpdateUsers = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (getActivity() == null)
+                return;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Iterator itr = data.keys();
+                    options.clear();
+
+                    int i = 0;
+                    while (itr.hasNext()) {
+                        String key = itr.next().toString();
+                        options.add(i, (key));
+                        i++;
+                    }
+                    Collections.reverse(options);
+                }
+            });
+        }
+    };
+
     private Emitter.Listener onUserJoined = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -516,16 +606,21 @@ public class MainFragment extends Fragment {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     String username;
-                    int numUsers;
+                    String message;
+                    String latitude;
+                    String longitude;
                     try {
                         username = data.getString("username");
-                        numUsers = data.getInt("numUsers");
+                        message = data.getString("message");
+                        latitude = data.getString("latitude");
+                        longitude = data.getString("longitude");
+                        Log.i(TAG, "" + latitude + longitude);
                     } catch (JSONException e) {
                         return;
                     }
 
-                    addLog(getResources().getString(R.string.message_user_joined, username));
-                    addParticipantsLog(numUsers);
+                    removeTyping(username);
+                    addMessage(username, message, longitude, latitude);
                 }
             });
         }

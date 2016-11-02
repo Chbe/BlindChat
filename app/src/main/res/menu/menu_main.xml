@@ -2,13 +2,29 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
+
+    <item android:id="@+id/radius_change"
+        android:title="@string/radius_change"
+        android:orderInCategory="100"
+        android:icon="@android:drawable/ic_menu_mylocation"
+        app:showAsAction="always"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
+
+    <item android:id="@+id/test"
+        android:title="Users online"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
+    <!--<item android:id="@+id/menu_spinner1"
+        android:title="@string/online_users"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Spinner"
+        android:orderInCategory="101"/>-->
+
     <item android:id="@+id/action_leave"
           android:title="@string/action_leave"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 
-    <item android:id="@+id/radius_change"
-        android:title="@string/radius_change"
-        android:orderInCategory="100"
-        app:showAsAction="always"/>
 </menu>
