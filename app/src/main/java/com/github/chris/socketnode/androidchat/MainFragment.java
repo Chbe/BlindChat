@@ -395,20 +395,12 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void addMessage(String username, String message, String longitude1, String latitude1) {
-        double distance = calculateDistance(longitude1, latitude1);
-        String completeRadius = Constants.radius + "." + String.valueOf(00);
-        Log.i(TAG, "" + distance + "m ifrån");
-        Log.i(TAG, "" + completeRadius + "m radie bestämt");
-
-        if (distance <= Double.parseDouble(completeRadius)) {
-
-            mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
+    private void addMessage(String username, String message) {
+        mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
                     .username(username + ": ").message(message).build());
             mAdapter.notifyItemInserted(mMessages.size() - 1);
             scrollToBottom();
             smackUpNotification(username, message);
-        }
     }
 
     private double calculateDistance(String longitude1, String latitude1) {
@@ -449,18 +441,12 @@ public class MainFragment extends Fragment {
         return bmp;
     }
 
-    private void addImage(String username, final Bitmap bmp, String longitude1, String latitude1) {
-        double distance = calculateDistance(longitude1, latitude1);
-        String completeRadius = Constants.radius + "." + String.valueOf(00);
-        Log.i(TAG, "" + distance + "m ifrån");
-        Log.i(TAG, "" + completeRadius + "m radie bestämt");
+    private void addImage(String username, final Bitmap bmp) {
 
-        if (distance <= Double.parseDouble(completeRadius)) {
             mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
                     .username(username + ": ").image(bmp).build());
             mAdapter.notifyItemInserted(mMessages.size() - 1);
             scrollToBottom();
-        }
 
     }
 
@@ -471,7 +457,7 @@ public class MainFragment extends Fragment {
             jsonObject.put("username", username);
             jsonObject.put("image", encodeImage(path));
             Bitmap bmp = decodeImage(jsonObject.getString("image"));
-            addImage(username, bmp, String.valueOf(longitude), String.valueOf(latitude));
+            addImage(username, bmp);
             jsonObject.put("longitude", longitude);
             jsonObject.put("latitude", latitude);
             mSocket.emit("new message", jsonObject);
@@ -494,7 +480,7 @@ public class MainFragment extends Fragment {
 
 
         mInputMessageView.setText("");
-        addMessage(username, message, String.valueOf(longitude), String.valueOf(latitude));
+        addMessage(username, message);
 
         try {
             JSONObject jsonObject = new JSONObject();
@@ -591,8 +577,14 @@ public class MainFragment extends Fragment {
                         message = data.getString("message");
                         latitude = data.getString("latitude");
                         longitude = data.getString("longitude");
-                        Log.i(TAG, "" + latitude + longitude);
-                        addMessage(username, message, longitude, latitude);
+                        double distance = calculateDistance(longitude, latitude);
+                        String completeRadius = Constants.radius + "." + String.valueOf(00);
+                        Log.i(TAG, "" + distance + "m ifrån");
+                        Log.i(TAG, "" + completeRadius + "m radie bestämt");
+
+                        if (distance <= Double.parseDouble(completeRadius)) {
+                            addMessage(username, message);
+                        }
                     } catch (JSONException e) {
                         //rrr
                     }
@@ -601,7 +593,14 @@ public class MainFragment extends Fragment {
                         imageText = data.getString("image");
                         latitude = data.getString("latitude");
                         longitude = data.getString("longitude");
-                        addImage(username, decodeImage(imageText), longitude, latitude);
+                        double distance = calculateDistance(longitude, latitude);
+                        String completeRadius = Constants.radius + "." + String.valueOf(00);
+                        Log.i(TAG, "" + distance + "m ifrån");
+                        Log.i(TAG, "" + completeRadius + "m radie bestämt");
+
+                        if (distance <= Double.parseDouble(completeRadius)) {
+                            addImage(username, decodeImage(imageText));
+                        }
 
                     } catch (JSONException e) {
                         //retur
@@ -664,10 +663,8 @@ public class MainFragment extends Fragment {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     String username;
-                    int numUsers;
                     try {
                         username = data.getString("username");
-                        numUsers = data.getInt("numUsers");
                     } catch (JSONException e) {
                         return;
                     }
