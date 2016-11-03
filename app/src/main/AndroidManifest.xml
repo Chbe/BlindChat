@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.github.chris.socketnode.androidchat.MainActivity"
-            android:label=""
+            android:label="@string/title_activity_login"
             android:launchMode="singleTop">
 
             <intent-filter>

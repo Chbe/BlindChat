@@ -7,14 +7,13 @@
         android:title="@string/radius_change"
         android:orderInCategory="100"
         android:icon="@android:drawable/ic_menu_mylocation"
-        app:showAsAction="always"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"/>
+        app:showAsAction="always" />
 
     <item android:id="@+id/test"
         android:title="Users online"
+        android:icon="@drawable/ic_menu_allfriends"
         android:orderInCategory="100"
-        app:showAsAction="never"/>
+        app:showAsAction="always"/>
 
     <!--<item android:id="@+id/menu_spinner1"
         android:title="@string/online_users"
