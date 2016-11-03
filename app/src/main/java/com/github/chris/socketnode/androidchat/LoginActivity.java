@@ -32,14 +32,7 @@ public class LoginActivity extends Activity {
 
     private Socket mSocket;
 
-    private SeekBar seekbarRadius;
     private TextView lblRadius;
-    //public static int radius = 500;
-
-    /*private static TextView mLocation;
-
-    private BroadcastReceiver broadcastReceiver;*/
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private String TAG = "LoginActivity";
 
     @Override
@@ -50,7 +43,7 @@ public class LoginActivity extends Activity {
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
 
-        seekbarRadius = (SeekBar) findViewById(R.id.seekbarID);
+        SeekBar seekbarRadius = (SeekBar) findViewById(R.id.seekbarID);
         lblRadius = (TextView) findViewById(R.id.lblRadius);
         seekbarRadius.setMax(5000);
         seekbarRadius.setProgress(500);

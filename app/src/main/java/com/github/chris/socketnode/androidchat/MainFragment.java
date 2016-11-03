@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,15 +76,12 @@ public class MainFragment extends Fragment {
 
     private BroadcastReceiver broadcastReceiver;
     private TextView textView;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    static final int MY_PERMISSIONS = 1;
     private double longitude = 0;
     private double latitude = 0;
     private Boolean isConnected = true;
     ArrayList<String> options = new ArrayList<String>();
     String imgDecodableString;
-    ImageView imageView;
-
-    boolean isImageFitToScreen;
 
     public MainFragment() {
         super();
@@ -122,10 +118,10 @@ public class MainFragment extends Fragment {
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS);
 
-            // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+            // MY_PERMISSIONS is an
             // app-defined int constant. The callback method gets the
             // result of the request.
         } else {
@@ -166,9 +162,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Intent intent = new Intent(getActivity(), BackgroundLocationService.class);
-        getActivity().startService(intent);
-        printLocation();
         Log.i(TAG, "Service startad från login");
     }
 
@@ -456,11 +449,18 @@ public class MainFragment extends Fragment {
         return bmp;
     }
 
-    private void addImage(String username, final Bitmap bmp){
-        mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
-                .username(username + ": ").image(bmp).build());
-        mAdapter.notifyItemInserted(mMessages.size() - 1);
-        scrollToBottom();
+    private void addImage(String username, final Bitmap bmp, String longitude1, String latitude1) {
+        double distance = calculateDistance(longitude1, latitude1);
+        String completeRadius = Constants.radius + "." + String.valueOf(00);
+        Log.i(TAG, "" + distance + "m ifrån");
+        Log.i(TAG, "" + completeRadius + "m radie bestämt");
+
+        if (distance <= Double.parseDouble(completeRadius)) {
+            mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
+                    .username(username + ": ").image(bmp).build());
+            mAdapter.notifyItemInserted(mMessages.size() - 1);
+            scrollToBottom();
+        }
 
     }
 
@@ -471,7 +471,7 @@ public class MainFragment extends Fragment {
             jsonObject.put("username", username);
             jsonObject.put("image", encodeImage(path));
             Bitmap bmp = decodeImage(jsonObject.getString("image"));
-            addImage(username, bmp);
+            addImage(username, bmp, String.valueOf(longitude), String.valueOf(latitude));
             jsonObject.put("longitude", longitude);
             jsonObject.put("latitude", latitude);
             mSocket.emit("new message", jsonObject);
@@ -599,7 +599,10 @@ public class MainFragment extends Fragment {
                     try {
                         username = data.getString("username");
                         imageText = data.getString("image");
-                        addImage(username, decodeImage(imageText));
+                        latitude = data.getString("latitude");
+                        longitude = data.getString("longitude");
+                        addImage(username, decodeImage(imageText), longitude, latitude);
+
                     } catch (JSONException e) {
                         //retur
                     }
@@ -693,7 +696,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+            case MY_PERMISSIONS: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
