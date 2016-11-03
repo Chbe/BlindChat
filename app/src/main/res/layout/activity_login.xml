@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.github.chris.socketnode.androidchat.LoginActivity">
+    tools:context="com.github.chris.socketnode.androidchat.LoginActivity"
+    android:background="@drawable/cast_expanded_controller_bg_gradient_light">
 
     <LinearLayout
         android:layout_width="match_parent"

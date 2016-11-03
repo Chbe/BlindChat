@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,6 +83,9 @@ public class MainFragment extends Fragment {
     private Boolean isConnected = true;
     ArrayList<String> options = new ArrayList<String>();
     String imgDecodableString;
+    ImageView imageView;
+
+    boolean isImageFitToScreen;
 
     public MainFragment() {
         super();
@@ -375,7 +379,6 @@ public class MainFragment extends Fragment {
         scrollToBottom();
     }
 
-
     private void smackUpNotification(String ausername, String message) {
         if (!ausername.equals(username)) {
 
@@ -453,11 +456,12 @@ public class MainFragment extends Fragment {
         return bmp;
     }
 
-    private void addImage(Bitmap bmp){
+    private void addImage(final Bitmap bmp){
         mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
                 .username(username + ": ").image(bmp).build());
         mAdapter.notifyItemInserted(mMessages.size() - 1);
         scrollToBottom();
+
     }
 
     public void sendImage(String path)
@@ -704,6 +708,5 @@ public class MainFragment extends Fragment {
             }
         }
     }
-
 }
 
