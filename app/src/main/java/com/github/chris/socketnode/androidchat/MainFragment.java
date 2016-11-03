@@ -456,7 +456,7 @@ public class MainFragment extends Fragment {
         return bmp;
     }
 
-    private void addImage(final Bitmap bmp){
+    private void addImage(String username, final Bitmap bmp){
         mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
                 .username(username + ": ").image(bmp).build());
         mAdapter.notifyItemInserted(mMessages.size() - 1);
@@ -471,7 +471,7 @@ public class MainFragment extends Fragment {
             jsonObject.put("username", username);
             jsonObject.put("image", encodeImage(path));
             Bitmap bmp = decodeImage(jsonObject.getString("image"));
-            addImage(bmp);
+            addImage(username, bmp);
             jsonObject.put("longitude", longitude);
             jsonObject.put("latitude", latitude);
             mSocket.emit("new message", jsonObject);
@@ -597,8 +597,9 @@ public class MainFragment extends Fragment {
                         //rrr
                     }
                     try {
+                        username = data.getString("username");
                         imageText = data.getString("image");
-                        addImage(decodeImage(imageText));
+                        addImage(username, decodeImage(imageText));
                     } catch (JSONException e) {
                         //retur
                     }

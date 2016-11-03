@@ -117,7 +117,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                                     mImageView.setImageResource(android.R.drawable.ic_delete);
                                     check++;
                                 }
-                            }, 5000);
+                            }, 2000);
                             return;
                         }
                     }
@@ -135,6 +135,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public void setMessage(String message) {
             if (null == mMessageView) return;
             mMessageView.setText(message);
+            if (null == mImageView) return;
+            mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         }
 
         private int getUsernameColor(String username) {
