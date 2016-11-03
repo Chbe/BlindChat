@@ -1,10 +1,12 @@
 package com.github.chris.socketnode.androidchat;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -45,6 +47,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         Message message = mMessages.get(position);
         viewHolder.setMessage(message.getMessage());
         viewHolder.setUsername(message.getUsername());
+        viewHolder.setImage(message.getImage());
     }
 
     @Override
@@ -60,12 +63,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mUsernameView;
         private TextView mMessageView;
+        private ImageView mImageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             mUsernameView = (TextView) itemView.findViewById(R.id.username);
             mMessageView = (TextView) itemView.findViewById(R.id.message);
+            mImageView = (ImageView) itemView.findViewById(R.id.image);
+        }
+
+        public void setImage(Bitmap bmp){
+            if(null == mImageView) return;
+            if(null == bmp) return;
+            mImageView.setImageBitmap(bmp);
         }
 
         public void setUsername(String username) {

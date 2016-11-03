@@ -1,5 +1,7 @@
 package com.github.chris.socketnode.androidchat;
 
+import android.graphics.Bitmap;
+
 public class Message {
 
     public static final int TYPE_MESSAGE = 0;
@@ -9,6 +11,7 @@ public class Message {
     private int mType;
     private String mMessage;
     private String mUsername;
+    private Bitmap mImage;
 
     private Message() {}
 
@@ -24,11 +27,17 @@ public class Message {
         return mUsername;
     };
 
+    public Bitmap getImage() {
+        return mImage;
+    };
+
+
 
     public static class Builder {
         private final int mType;
         private String mUsername;
         private String mMessage;
+        private Bitmap mImage;
 
         public Builder(int type) {
             mType = type;
@@ -44,11 +53,17 @@ public class Message {
             return this;
         }
 
+        public Builder image(Bitmap image) {
+            mImage = image;
+            return this;
+        }
+
         public Message build() {
             Message message = new Message();
             message.mType = mType;
             message.mUsername = mUsername;
             message.mMessage = mMessage;
+            message.mImage = mImage;
             return message;
         }
     }

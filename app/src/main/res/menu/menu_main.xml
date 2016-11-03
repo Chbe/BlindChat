@@ -3,6 +3,12 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
 
+    <item android:id="@+id/attach"
+        android:title="@string/attach"
+        android:orderInCategory="100"
+        android:icon="@android:drawable/ic_menu_gallery"
+        app:showAsAction="always" />
+
     <item android:id="@+id/radius_change"
         android:title="@string/radius_change"
         android:orderInCategory="100"

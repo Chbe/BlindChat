@@ -11,8 +11,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +25,7 @@ import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,6 +44,10 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -71,6 +81,7 @@ public class MainFragment extends Fragment {
     private double latitude = 0;
     private Boolean isConnected = true;
     ArrayList<String> options = new ArrayList<String>();
+    String imgDecodableString;
 
     public MainFragment() {
         super();
@@ -195,11 +206,26 @@ public class MainFragment extends Fragment {
             return;
         }
 
-        username = data.getStringExtra("username");
-        int numUsers = data.getIntExtra("numUsers", 1);
+        if(requestCode == 1) {
+            Log.i(TAG, "Gallery");
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-
-        addLog(getResources().getString(R.string.message_welcome));
+            Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            // Move to first row
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            imgDecodableString = cursor.getString(columnIndex);
+            cursor.close();
+            //Log.d("onActivityResult",imgDecodableString);
+            MainFragment fragment = (MainFragment) getFragmentManager().findFragmentById(R.id.chat);
+            fragment.sendImage(imgDecodableString);
+        }
+        else {
+            username = data.getStringExtra("username");
+            addLog(getResources().getString(R.string.message_welcome));
+        }
     }
 
     @Override
@@ -252,9 +278,18 @@ public class MainFragment extends Fragment {
             case R.id.test:
                 ShowDialogUsers();
                 return true;
+            case R.id.attach:
+                openGallery();
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openGallery()
+    {
+        Intent galleryintent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryintent, 1);
     }
 
     public void ShowDialogUsers() {
@@ -397,6 +432,52 @@ public class MainFragment extends Fragment {
 
     }
 
+    private String encodeImage(String path) throws FileNotFoundException {
+        File imagefile = new File(path);
+        FileInputStream fis = new FileInputStream(imagefile);
+
+        Bitmap bm = BitmapFactory.decodeStream(fis);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] b = baos.toByteArray();
+        String encImage = Base64.encodeToString(b, Base64.DEFAULT);
+        //Base64.de
+        return encImage;
+
+    }
+
+    private Bitmap decodeImage(String data)
+    {
+        byte[] b = Base64.decode(data,Base64.DEFAULT);
+        Bitmap bmp = BitmapFactory.decodeByteArray(b,0,b.length);
+        return bmp;
+    }
+
+    private void addImage(Bitmap bmp){
+        mMessages.add(new Message.Builder(Message.TYPE_MESSAGE)
+                .username(username + ": ").image(bmp).build());
+        mAdapter.notifyItemInserted(mMessages.size() - 1);
+        scrollToBottom();
+    }
+
+    public void sendImage(String path)
+    {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", username);
+            jsonObject.put("image", encodeImage(path));
+            Bitmap bmp = decodeImage(jsonObject.getString("image"));
+            addImage(bmp);
+            jsonObject.put("longitude", longitude);
+            jsonObject.put("latitude", latitude);
+            mSocket.emit("new message", jsonObject);
+        } catch (JSONException e) {
+            Log.i(TAG, e.toString());
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, e.toString());
+        }
+    }
+
     private void attemptSend() {
         if (null == username) return;
         if (!mSocket.connected()) return;
@@ -500,16 +581,24 @@ public class MainFragment extends Fragment {
                     String message;
                     String latitude;
                     String longitude;
+                    String imageText;
                     try {
                         username = data.getString("username");
                         message = data.getString("message");
                         latitude = data.getString("latitude");
                         longitude = data.getString("longitude");
                         Log.i(TAG, "" + latitude + longitude);
+                        addMessage(username, message, longitude, latitude);
                     } catch (JSONException e) {
-                        return;
+                        //rrr
                     }
-                    addMessage(username, message, longitude, latitude);
+                    try {
+                        imageText = data.getString("image");
+                        addImage(decodeImage(imageText));
+                    } catch (JSONException e) {
+                        //retur
+                    }
+
                 }
             });
         }
